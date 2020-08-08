@@ -17,7 +17,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "karma start",
+    "test": "karma start --single-run  ",
     "bundle": "node bundler.js",
     "prepublishOnly": "npm run bundle"
   },
@@ -52,7 +52,7 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.1",
     "karma-parcel": "^0.5.2",
-    "mocha": "^7.2.0",
+    "mocha": "^8.1.1",
     "mocha-test-container-support": "^0.2.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-stringify-anything": "^1.2.0",
