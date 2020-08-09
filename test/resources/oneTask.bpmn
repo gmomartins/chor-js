@@ -17,13 +17,13 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_Choreography_1" bpmnElement="Choreography">
       <bpmndi:BPMNShape id="ChoreographyTask_Activity_di" bpmnElement="ChoreographyTask_Activity">
-        <dc:Bounds x="100" y="100" width="100" height="80" />
+        <dc:Bounds x="300" y="300" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_P1" bpmnElement="Participant_P1" isMessageVisible="true" participantBandKind="top_initiating" choreographyActivityShape="ChoreographyTask_Activity_di">
-        <dc:Bounds x="100" y="100" width="100" height="20" />
+        <dc:Bounds x="300" y="300" width="100" height="20" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_P2" bpmnElement="Participant_P2" isMessageVisible="true" participantBandKind="bottom_non_initiating" choreographyActivityShape="ChoreographyTask_Activity_di">
-        <dc:Bounds x="100" y="160" width="100" height="20" />
+        <dc:Bounds x="300" y="360" width="100" height="20" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
     <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">
