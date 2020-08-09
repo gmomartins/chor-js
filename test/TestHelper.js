@@ -2,7 +2,7 @@ import ChoreoModeler from '../lib/Modeler';
 import { bootstrapBpmnJS, getBpmnJS, inject as bpmnInject, insertCSS } from 'bpmn-js/test/helper';
 import { assign } from 'min-dash';
 
-require('source-map-support').install();
+//require('source-map-support').install();
 
 
 insertCSS('diagram-js-testing.css',

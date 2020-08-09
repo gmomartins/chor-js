@@ -53,8 +53,10 @@ describe('feature/space-tool', function() {
         expect(task.y).to.equal(oldTaskY + config.deltaY);
         expect(topBand.y).to.equal(task.y);
         expect(bottomBand.y).to.equal(task.y + task.height - bottomBand.height);
-        expect(upperMessage.y).to.equal(task.y + upperMessage.height);
-        expect(bottomMessage.x).to.equal(task.y + task.height );
+        debugger;
+        // jo its actually not moved damn
+        expect(upperMessage.y).to.equal(task.y - upperMessage.height);
+        expect(bottomMessage.y).to.equal(task.y + task.height);
       });
     });
 

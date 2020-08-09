@@ -13,11 +13,12 @@
 
 <script src="https://unpkg.com/chai/chai.js"></script>
 <script src="https://unpkg.com/mocha/mocha.js"></script>
-
+<script src="../node_modules/source-map-support/browser-source-map-support.js"></script>
+<script>sourceMapSupport.install();</script>
 <script class="mocha-init">
   mocha.setup({
     ui: 'bdd',
-
+    slow: '200',
   });
   mocha.checkLeaks();
 </script>
