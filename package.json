@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "test": "karma start --single-run  ",
     "bundle": "node bundler.js",
-    "prepublishOnly": "npm run bundle"
+    "prepublishOnly": "npm run bundle",
+    "mochatest": "node --trace-warnings ./test/testBundler.js"
   },
   "author": {
     "name": "Jan Ladleif",

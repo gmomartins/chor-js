@@ -9,7 +9,7 @@ module.exports = function(karma) {
     frameworks: ['mocha', 'chai', 'parcel'],
 
     files: [
-      { pattern: 'test/spec/**/*Spec.js', included: false, served: false, watched: false, nocache: false },
+      { pattern: 'test/spec/**/*Spec.js', included: false, served: false, watched: true, nocache: false },
     ],
     preprocessors: {
       '**/*.bpmn': ['parcel'],
