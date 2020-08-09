@@ -20,7 +20,7 @@
     "test": "karma start --single-run  ",
     "bundle": "node bundler.js",
     "prepublishOnly": "npm run bundle",
-    "mochatest": "node --trace-warnings ./test/testBundler.js"
+    "mochatest": "node ./test/testBundler.js"
   },
   "author": {
     "name": "Jan Ladleif",

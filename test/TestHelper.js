@@ -2,11 +2,12 @@ import ChoreoModeler from '../lib/Modeler';
 import { bootstrapBpmnJS, getBpmnJS, inject as bpmnInject, insertCSS } from 'bpmn-js/test/helper';
 import { assign } from 'min-dash';
 
-insertCSS('diagram-js.css', require('bpmn-js/dist/assets/diagram-js.css'));
-insertCSS('bpmn-embedded.css', require('bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'));
+
 
 insertCSS('diagram-js-testing.css',
-  '.test-container .result { height: 500px; }' + '.test-container > div'
+  'body .test-container { height: auto; margin: 10px; }' +
+  'body .test-container .test-content-container { height: 80vmin; }' +
+  'body .test-content-container {margin: 0px; }'
 );
 
 export const inject = bpmnInject;
