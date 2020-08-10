@@ -6,9 +6,9 @@ import { assign } from 'min-dash';
 
 
 insertCSS('diagram-js-testing.css',
-  'body .test-container { height: auto; margin: 10px; }' +
-  'body .test-container .test-content-container { height: 80vmin; }' +
-  'body .test-content-container {margin: 0px; }'
+  'body .test-container { height: auto; margin: 15px; }' +
+  'body .test-content-container {margin: 0px; }' +
+  'body .test-container .test-content-container .bjs-container { height: 80vmin !important; min-height: 300px;}'
 );
 
 export const inject = bpmnInject;
@@ -77,4 +77,13 @@ export function createEvent(target, position, data) {
 
     return eventBus.createEvent(data);
   });
+}
+
+export function getBounds(shape) {
+  return {
+    x: shape.x,
+    y: shape.y,
+    height: shape.height,
+    width: shape.width
+  };
 }
