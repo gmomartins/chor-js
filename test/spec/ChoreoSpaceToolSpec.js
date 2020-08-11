@@ -1,20 +1,21 @@
 import { bootstrapChorModeler, inject, createCanvasEvent, getBounds } from '../TestHelper';
 
 import { isMac } from 'diagram-js/lib/util/Platform';
-import { delta } from 'diagram-js/lib/util/PositionUtil';
 
 describe('feature/space-tool', function() {
 
-  var basicXML = require('../resources/oneTask.bpmn');
-  beforeEach(bootstrapChorModeler(basicXML));
+  const oneTaskXML = require('../resources/oneTask.bpmn');
+  const bigTaskXML = require('../resources/oneBigTask.bpmn');
   let Dragging, SpaceTool, Canvas, ElementRegistry;
-  beforeEach(inject(function(dragging, spaceTool, canvas, elementRegistry) {
+  const injectDependencies = inject(function(dragging, spaceTool, canvas, elementRegistry, autoScroll) {
     Dragging = dragging;
     SpaceTool = spaceTool;
     Canvas = canvas;
     ElementRegistry = elementRegistry;
+    autoScroll.setOptions({ scrollStep: 0 }); // Disables auto scroll with the crosshair enabled which is triggers a
+    // lot by accident when inspecting the test container in mocha
     console.log('ran');
-  }));
+  });
 
   describe('selection', function() {
     it('selects bands as resizable', function(dragging, spaceTool) {
@@ -25,6 +26,8 @@ describe('feature/space-tool', function() {
     });
   });
   describe('task moving keeps participants and messages attached', function() {
+    beforeEach(bootstrapChorModeler(oneTaskXML));
+    beforeEach(injectDependencies);
     const tests = [
       { deltaX: 100, message: 'to the right when pushing from the left' },
       { deltaX: -100, message: 'to the left when pulling from the left' },
@@ -44,89 +47,107 @@ describe('feature/space-tool', function() {
       it('correctly moves task, bands, and messages ' + config.message, function() {
         let topBand = getTopBand(ElementRegistry);
         let bottomBand = getBottomBand(ElementRegistry);
-        let upperMessage = getTopMessage(ElementRegistry);
+        let topMessage = getTopMessage(ElementRegistry);
         let bottomMessage = getBottomMessage(ElementRegistry);
         const task = getTask(ElementRegistry);
 
         const oldTaskX = task.x;
         const oldTaskY = task.y;
-        const messageOffset = task.y - upperMessage.y - upperMessage.height; // height + magic number 20
+        const messageOffset = task.y - topMessage.y - topMessage.height; // height + magic number 20
         moveSpaceTool(Dragging, SpaceTool, config);
         // check x
-        expect(task.x).to.equal(oldTaskX + (config.deltaX | 0), 'Horizontal movement');
+        expect(task.x).to.equal(oldTaskX + (config.deltaX | 0), 'Task moves horizontally');
 
-        expect(topBand.x).to.equal(task.x);
-        expect(bottomBand.x).to.equal(task.x);
+        expect(topBand.x).to.equal(task.x, 'Top band horizontal position is equal to task`s horizontal position');
+        expect(bottomBand.x).to.equal(task.x, 'Bottom band horizontal position is equal to task`s horizontal position');
 
-        expect(upperMessage.x).to.equal(task.x + task.width / 2 - upperMessage.width / 2);
-        expect(bottomMessage.x).to.equal(task.x + task.width / 2 - bottomMessage.width / 2);
+        expect(topMessage.x).to.equal(task.x + task.width / 2 - topMessage.width / 2, 'Top message is centered horizontally');
+        expect(bottomMessage.x).to.equal(task.x + task.width / 2 - bottomMessage.width / 2, 'Bottom message is centered horizontally');
 
         // check y
-        expect(task.y).to.equal(oldTaskY + (config.deltaY | 0));
+        expect(task.y).to.equal(oldTaskY + (config.deltaY | 0), 'Task moves vertically');
 
-        expect(topBand.y).to.equal(task.y);
-        expect(bottomBand.y).to.equal(task.y + task.height - bottomBand.height);
+        expect(topBand.y).to.equal(task.y, 'Top band vertical position is equal to task`s vertical position');
+        expect(bottomBand.y).to.equal(task.y + task.height - bottomBand.height, 'Top band vertical position is correct');
 
-        expect(upperMessage.y).to.equal(task.y - messageOffset - upperMessage.height);
-        expect(bottomMessage.y).to.equal(task.y + task.height + messageOffset);
+        expect(topMessage.y).to.equal(task.y - messageOffset - topMessage.height, 'Top message vertical position is correct');
+        expect(bottomMessage.y).to.equal(task.y + task.height + messageOffset, 'Bottom message vertical position is correct');
       });
     });
 
   });
   describe('task resizing keeps messages attached and resizes bands', function() {
     const tests = [
-      { deltaX: 100, message: 'increase size when pulling to the right' },
-      { deltaX: -100, pressModifierKey: true, message: 'increase size when pulling to the left' },
-      { deltaY: 100, message: 'increase size when pulling downwards' },
-      { deltaY: -100, pressModifierKey: true, message: 'increase size when pulling upwards' },
-
+      // increasing size
+      { deltaX: 100, message: 'increases size when pulling to the right' },
+      { deltaX: -100, pressModifierKey: true, message: 'increases size when pulling to the left' },
+      { deltaY: 100, message: 'increases size when pulling downwards' },
+      { deltaY: -100, pressModifierKey: true, message: 'increases size when pulling upwards' },
+      // decreasing size
+      { startX: 499, deltaX: -100, message: 'decreases size when pulling from the right', shrink: true },
+      { startX: 301, deltaX: 100, pressModifierKey: true, message: 'decrease size when pushing from the left', shrink: true },
+      { startY: 321, deltaY: 100, pressModifierKey: true, message: 'decrease size when pushing downwards from the top', shrink: true },
+      { start: 379, deltaY: -100, message: 'decrease size when pulling upwards from the bottom', shrink: true },
     ];
 
     tests.forEach(function(config) {
-      it('correctly ' + config.message + ' and keeps message attached', function() {
-        let upperBand = getTopBand(ElementRegistry);
+      beforeEach(function() {
+        if (config.shrink) {
+          return bootstrapChorModeler(bigTaskXML);
+        } else {
+          return bootstrapChorModeler(oneTaskXML);
+        }
+      }());
+
+      beforeEach(injectDependencies);
+      it('correctly ' + config.message, function() {
+        let topBand = getTopBand(ElementRegistry);
         let bottomBand = getBottomBand(ElementRegistry);
-        let upperMessage = getTopMessage(ElementRegistry);
+        let topMessage = getTopMessage(ElementRegistry);
         let bottomMessage = getBottomMessage(ElementRegistry);
         const task = getTask(ElementRegistry);
 
         const oldTaskBounds = getBounds(task);
-        const oldUpperBandBounds = getBounds(upperBand);
+        const oldUpperBandBounds = getBounds(topBand);
         const oldBottomBandBounds = getBounds(bottomBand);
-        const messageOffset = task.y - upperMessage.y - upperMessage.height; // height + magic number = 20
+        const messageOffset = task.y - topMessage.y - topMessage.height; // height + magic number = 20
 
         config.startX = config.startX || oldTaskBounds.x + 0.5 * oldTaskBounds.width;
         config.startY = config.startY || oldTaskBounds.y + 0.5 * oldTaskBounds.height;
 
         moveSpaceTool(Dragging, SpaceTool, config);
         // check x
-        expect(task.width).to.equal(oldTaskBounds.width + (Math.abs(config.deltaX) | 0));
+        const actualXDelta = (config.shrink ? -1 : 1) * (Math.abs(config.deltaX) || 0);
+        expect(task.width).to.equal(oldTaskBounds.width + actualXDelta, 'Task width scaled correctly');
 
-        expect(upperBand.width).to.equal(task.width);
-        expect(bottomBand.width).to.equal(task.width);
+        expect(topBand.width).to.equal(task.width, 'Top band width scaled correctly');
+        expect(bottomBand.width).to.equal(task.width, 'Bottom band width scaled correctly');
 
-        expect(upperMessage.x).to.equal(task.x + task.width / 2 - upperMessage.width / 2);
-        expect(bottomMessage.x).to.equal(task.x + task.width / 2 - bottomMessage.width / 2);
+        expect(topMessage.x).to.equal(task.x + task.width / 2 - topMessage.width / 2, 'Top message stays centered horizontally');
+        expect(bottomMessage.x).to.equal(task.x + task.width / 2 - bottomMessage.width / 2, 'Top message stays centered horizontally');
 
         // check y
-        expect(task.height).to.equal(oldTaskBounds.height + (Math.abs(config.deltaY) | 0));
+        const actualYDelta = (config.shrink ? -1 : 1) * (Math.abs(config.deltaY) || 0);
+        expect(task.height).to.equal(oldTaskBounds.height + actualYDelta, 'Task height scaled correctly');
 
-        expect(upperBand.y).to.equal(task.y);
-        expect(bottomBand.y).to.equal(task.y + task.height - bottomBand.height);
+        expect(topBand.y).to.equal(task.y, 'Top band horizontal position is correct');
+        expect(bottomBand.y).to.equal(task.y + task.height - bottomBand.height, 'Bottom band horizontal position is correct');
 
-        expect(upperBand.height).to.equal(oldUpperBandBounds.height);
-        expect(bottomBand.height).to.equal(oldBottomBandBounds.height);
+        expect(topBand.height).to.equal(oldUpperBandBounds.height, 'Top band height did not scale');
+        expect(bottomBand.height).to.equal(oldBottomBandBounds.height, 'Bottom band height did not scale');
 
-        expect(upperMessage.y).to.equal(task.y - messageOffset - upperMessage.height);
-        expect(bottomMessage.y).to.equal(task.y + task.height + messageOffset);
+        expect(topMessage.y).to.equal(task.y - messageOffset - topMessage.height, 'Top message vertical position is correct');
+        expect(bottomMessage.y).to.equal(task.y + task.height + messageOffset, 'Bottom message vertical position is correct');
       });
     });
 
-    // todo size decreasing missing
   });
 });
 
-// / helper
+// helpers
+
+
+
 function moveSpaceTool(dragging, spaceTool, { startX = 150, startY = 150, deltaX = 0, deltaY = 0, pressModifierKey = false, message = '' }) {
 
   if (!(Math.abs(deltaX) >= 100 || Math.abs(deltaY) >= 100)) {
