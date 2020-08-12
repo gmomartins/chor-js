@@ -97,7 +97,7 @@ describe('feature/space-tool', function() {
       { startY: 310, deltaY: 100, pressModifierKey: true, message: 'decrease size when pushing downwards from the top on the band', shrink: true },
       { startY: 359, deltaY: -100, message: 'decrease size when pulling upwards from the mid/bottom', shrink: true },
       { startY: 375, deltaY: -100, message: 'decrease size when pulling upwards from the bottom band', shrink: true },
-      { startY: 319, deltaY: -19, message: 'decrease size when pulling upwards from the top  band', shrink: true },
+      { startY: 305, deltaY: -50, message: 'decrease size when pulling upwards from the top  band', shrink: true },
 
     ];
 
