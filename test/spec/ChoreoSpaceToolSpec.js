@@ -6,15 +6,13 @@ describe('feature/space-tool', function() {
 
   const oneTaskXML = require('../resources/oneTask.bpmn');
   const bigTaskXML = require('../resources/oneBigTask.bpmn');
-  let Dragging, SpaceTool, Canvas, ElementRegistry;
-  const injectDependencies = inject(function(dragging, spaceTool, canvas, elementRegistry, autoScroll) {
+  let Dragging, SpaceTool, ElementRegistry;
+  const injectDependencies = inject(function(dragging, spaceTool, elementRegistry, autoScroll) {
     Dragging = dragging;
     SpaceTool = spaceTool;
-    Canvas = canvas;
     ElementRegistry = elementRegistry;
-    autoScroll.setOptions({ scrollStep: 0 }); // Disables auto scroll with the crosshair enabled which is triggers a
+    autoScroll.setOptions({ scrollStep: 0 }); // Disables auto scroll with the cross-hair enabled which is triggers a
     // lot by accident when inspecting the test container in mocha
-    console.log('ran');
   });
 
   describe('selection', function() {
@@ -152,8 +150,11 @@ describe('feature/space-tool', function() {
 
 
 function moveSpaceTool(dragging, spaceTool, { startX = 150, startY = 150, deltaX = 0, deltaY = 0, pressModifierKey = false, message = '' }) {
+  if (Math.abs(deltaX) % 10 !== 0 || Math.abs(deltaY) % 10 !== 0) {
+    console.warn('The spacetool can only move precisely in multiples of 10');
+  }
 
-  if (!(Math.abs(deltaX) >= 100 || Math.abs(deltaY) >= 100)) {
+  if (!(Math.abs(deltaX) >= 21 || Math.abs(deltaY) >= 21)) {
     console.warn('Delta is not large enough. The graphical representation will start auto-scrolling to infinity. ' +
       'This should however not affect the test result');
   }

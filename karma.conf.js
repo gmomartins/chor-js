@@ -24,9 +24,9 @@ module.exports = function(karma) {
       cacheDir: '.test-cache',
     },
 
-    //logLevel: karma.LOG_INFO,
+    logLevel: karma.LOG_INFO,
 
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
     client: {
       mocha: {
@@ -36,7 +36,7 @@ module.exports = function(karma) {
 
     browserNoActivityTimeout: 30000,
 
-    //singleRun: true,
+    singleRun: true,
     autoWatch: false,
     middleware: ['custom'],
     plugins: [
