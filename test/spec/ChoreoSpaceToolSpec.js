@@ -18,10 +18,10 @@ describe('feature/space-tool', function() {
   });
 
   describe('selection', function() {
-    it('selects bands as resizable', function(dragging, spaceTool) {
+    xit('selects bands as resizable', function(dragging, spaceTool) {
 
     });
-    it('selects messages as movable', function() {
+    xit('selects messages as movable', function() {
 
     });
   });
@@ -77,29 +77,32 @@ describe('feature/space-tool', function() {
 
   });
   describe('task resizing keeps messages attached and resizes bands', function() {
+    beforeEach(bootstrapChorModeler(bigTaskXML));
+    beforeEach(injectDependencies);
+
     const tests = [
       // increasing size
       { deltaX: 100, message: 'increases size when pulling to the right' },
+      { startX: 305, startY: 305, deltaX: 100, message: 'increases size when pulling on the band to the right ' },
       { deltaX: -100, pressModifierKey: true, message: 'increases size when pulling to the left' },
       { deltaY: 100, message: 'increases size when pulling downwards' },
+      { startY: 370, deltaY: 100, message: 'increases size when pulling on the bottom band downwards ' },
       { deltaY: -100, pressModifierKey: true, message: 'increases size when pulling upwards' },
+      { startX: 305, startY: 305, deltaY: -100, pressModifierKey: true, message: 'increases size when pulling on the top band upwards' },
+
       // decreasing size
       { startX: 499, deltaX: -100, message: 'decreases size when pulling from the right', shrink: true },
       { startX: 301, deltaX: 100, pressModifierKey: true, message: 'decrease size when pushing from the left', shrink: true },
       { startY: 321, deltaY: 100, pressModifierKey: true, message: 'decrease size when pushing downwards from the top', shrink: true },
-      { start: 379, deltaY: -100, message: 'decrease size when pulling upwards from the bottom', shrink: true },
+      { startY: 310, deltaY: 100, pressModifierKey: true, message: 'decrease size when pushing downwards from the top on the band', shrink: true },
+      { startY: 359, deltaY: -100, message: 'decrease size when pulling upwards from the mid/bottom', shrink: true },
+      { startY: 375, deltaY: -100, message: 'decrease size when pulling upwards from the bottom band', shrink: true },
+      { startY: 319, deltaY: -19, message: 'decrease size when pulling upwards from the top  band', shrink: true },
+
     ];
 
     tests.forEach(function(config) {
-      beforeEach(function() {
-        if (config.shrink) {
-          return bootstrapChorModeler(bigTaskXML);
-        } else {
-          return bootstrapChorModeler(oneTaskXML);
-        }
-      }());
 
-      beforeEach(injectDependencies);
       it('correctly ' + config.message, function() {
         let topBand = getTopBand(ElementRegistry);
         let bottomBand = getBottomBand(ElementRegistry);
